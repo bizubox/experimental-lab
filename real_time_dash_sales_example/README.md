@@ -3,4 +3,6 @@ Reall time sell-out Dash app Dash abstracts away all of the technologies and pro
 
 This is a prototype using Dash interactive Python framework developed by Plotly.
 
+<video src="gif/video.mp4" width="1258" height="578" controls preload></video>
+
 bizubox lab: Some codes, some ideas, somo explorations by bizubox =)
