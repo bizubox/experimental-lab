@@ -43,3 +43,4 @@ get_companies_data()
 #// ['#f0f9e8','#bae4bc','#7bccc4','#43a2ca','#0868ac']
 #// ['#f0f9e8','#bae4bc','#7bccc4','#43a2ca','#0868ac']
 #https://s3.us-east-2.amazonaws.com/bizubox-playground/data.csv
+#REFS: https://www.mapbox.com/help/make-a-heatmap-with-mapbox-gl-js/
