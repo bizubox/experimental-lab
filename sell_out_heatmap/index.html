@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Create a heatmap layer</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        /* #map { position:absolute; top:0; bottom:0; width:100%; } */
+        #map {height: 450px;}
+        .fc {color: #00b5bd; font-family: Rajdhani; border-color:#00b5bd}
+        .bt {color: #ffffff; font-family: Rajdhani; background-color: #00b5bd}
+        .ff {color: #596768; font-family: Rajdhani}
+
+    </style>
+</head>
+<body>
+
+
+<!-- Main Content-->
+<div id='content'class="container">
+
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <a class="my-0 mr-md-auto navbar-brand" href="#">
+                    <img src="assets/logo.png" height="50" class="d-inline-block align-top" alt="">
+            </a>
+            <nav class="my-2 my-md-0 mr-md-3">
+              <a class="p-2 text-dark ff" href="http://bizubox.com">Suporte</a>
+            </nav>
+            <a class="btn btn-outline-primary fc" href="http://bizubox.com">Contato</a>
+    </div>
+
+    <div class="pricing-header mx-auto">
+            <h4 class="display-4 fc">Sell-out Geolocalizado</h4>
+            <!-- p class="lead">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It's built with default Bootstrap components and utilities with little customization.</p> -->
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label class="ff">Período</label>
+                <select class="custom-select fc">
+                        <option selected>Selecione o período</option>
+                        <option value="1" selected>1 ano</option>
+                        <option value="2">6 meses</option>
+                        <option value="2">3 meses</option>
+                        <option value="2">30 dias</option>
+                        <option value="3">7 dias</option>
+                        <option value="3">1 dia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                    <label class="ff">Categoria</label>
+                    <select class="custom-select fc">
+                            <option selected>Selecione a categoria</option>
+                            <option value="1" selected>CIGARRO</option>
+                            <option value="2">BEBIDAS</option>
+                            <option value="2">OUTROS</option>
+                    </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="ff">Produtos</label>
+                <select class="custom-select fc">
+                        <option selected>Selecione o produto</option>
+                        <option value="1" selected>MARLBORO MENTHOL</option>
+                        <option value="2">MARLBORO LIGHTS</option>
+                        <option value="2">NEXT BLUE</option>
+                        <option value="2">L&M BLUE</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                    <label class="ff">Volume de vendas</label></br>
+                    <p class="fc">
+                        <input type="radio"> Alto
+                        <input type="radio"> Baixo
+                    </p>
+            </div>
+            <a class="btn bt" href="#">Atualizar</a>
+        </div>
+
+        
+        <div class="col-md-8">
+            <div id='map'></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibWFyY3Vzb3MiLCJhIjoiY2pwc2VkOWFsMGI2cTQybjdsYTRqcTloZSJ9.kBJHQWgsO5zADsyNWsDSTw';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-46.6590341,-23.5629077],
+    zoom: 14
+});
+
+// Add zoom and rotation controls to the map.
+map.addControl(new mapboxgl.NavigationControl());
+
+map.on('load', function() {
+    // Add a geojson point source.
+    // Heatmap layers also work with a vector tile source.
+    map.addSource('bizubox', {
+        "type": "geojson",
+        //"data": "https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+        "data": "https://s3.us-east-2.amazonaws.com/bizubox-playground/data.geojson"
+    });
+
+    map.addLayer({
+        id: 'trees-heat',
+        type: 'heatmap',
+        source: 'bizubox',
+        maxzoom: 10,
+        paint: {
+            // increase weight as diameter breast height increases
+            'heatmap-weight': {
+            property: 'value',
+            type: 'exponential',
+            stops: [
+                [1, 0],
+                [540483, 140064]
+            ]
+            },
+            // increase intensity as zoom level increases
+            'heatmap-intensity': {
+            stops: [
+                [11, 1],
+                [15, 3]
+            ]
+            },
+            // assign color values be applied to points depending on their density
+            'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0, 'rgba(236,222,239,0)',
+            0.2, 'rgb(208,209,230)',
+            0.4, 'rgb(166,189,219)',
+            0.6, 'rgb(103,169,207)',
+            0.8, 'rgb(28,144,153)'
+            ],
+            // increase radius as zoom increases
+            'heatmap-radius': {
+            stops: [
+                [11, 15],
+                [15, 20]
+            ]
+            },
+            // decrease opacity to transition into the circle layer
+            'heatmap-opacity': {
+            default: 1,
+            stops: [
+                [14, 1],
+                [15, 0]
+            ]
+            },
+        }
+    }, 'waterway-label');
+
+    map.addLayer({
+        id: 'trees-point',
+        type: 'circle',
+        source: 'bizubox',
+        minzoom: 11,
+        paint: {
+            // increase the radius of the circle as the zoom level and dbh value increases
+            'circle-radius': {
+            property: 'value',
+            type: 'exponential',
+            stops: [
+                [{ zoom: 9, value: 140064 }, 5],
+                [{ zoom: 9, value: 540483 }, 10],
+                [{ zoom: 22, value: 140064 }, 20],
+                [{ zoom: 22, value: 540483 }, 50],
+            ]
+            },
+            'circle-color': {
+                property: 'value',
+                type: 'exponential',
+                stops: [
+                    [140000, 'rgba(236,222,239,0)'],
+                    [200000, 'rgb(236,222,239)'],
+                    [260000, 'rgb(208,209,230)'],
+                    [320000, 'rgb(166,189,219)'],
+                    [440000, 'rgb(103,169,207)'],
+                    [500000, 'rgb(28,144,153)'],
+                    [540000, 'rgb(1,108,89)']
+                ]
+            },
+            'circle-stroke-color': 'white',
+            'circle-stroke-width': 1,
+            'circle-opacity': {
+                stops: [
+                    [9, 0],
+                    [11, 1]
+                ]
+            }
+        }
+    }, 'waterway-label');
+
+    map.on('click', 'trees-point', function(e) {
+        new mapboxgl.Popup()
+            .setLngLat(e.features[0].geometry.coordinates)
+            .setHTML(
+                '<b>' + e.features[0].properties.company + '</b><br>' + 
+                '<b>Volume de vendas: R$ </b>' + (e.features[0].properties.value).toFixed(2)
+            )
+            .addTo(map);
+    });
+});
+</script>
+
+</body>
+</html>
