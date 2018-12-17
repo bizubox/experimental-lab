@@ -7,7 +7,7 @@ import codecs
 # python -c 'import numpy as np; l = np.array([131, 3226, 62, 186]); print(l/l.sum()*100); print(l/l.sum()*100-100);'
 # REFERENCES: https://github.com/keras-team/keras/issues/741
 def get_companies_data():
-    df = pd.read_csv('data.csv')
+    df = pd.read_csv('data/data.csv')
     NUM_POINTS = df.shape[0]
     AVERAGE_SALE_PRICE = 350000
     SD_SALE_PRICE = 100000
